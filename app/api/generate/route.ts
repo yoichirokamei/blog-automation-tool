@@ -93,12 +93,67 @@ export async function POST(req: Request) {
       ${strictRules}`;
     } else if (mode === "generate-image-prompt") {
       prompt = `
-      以下の情報を元に、画像生成AI用のプロンプトとSNS投稿文を作成してください。
-      サムネイルテキスト案リストから「№${selectedThumbNo}」、最強タイトル案リストから「№${selectedStrongTitleNo}」を採用。
+      あなたはプロのプロンプトエンジニアです。以下の情報を元に、画像生成AI用のプロンプトとSNS投稿文を作成してください。
+      
+      【前提条件】
+      サムネイルテキスト案リストから「№${selectedThumbNo}」を採用。
+      最強タイトル案リストから「№${selectedStrongTitleNo}」を採用。
       記事内容: ${blogResult}
 
       【作成物1：画像生成プロンプト】
-      画像生成AI用の英語プロンプト。仕様: 16:9（横長）、高品質、知的でスタイリッシュ。採用したテキストを画像に含めるようAIに指示してください。
+      以下のフォーマットの { } で囲まれた部分を、記事内容やターゲットに合わせて具体的に埋め、完成版のプロンプトを作成してください。（レイアウトパターンは参考例から最適なものを1つ選んで記載してください）
+
+      # 指示:
+      - 以下の「記事」を理解し、Nano Banana Proを使用して記事のサムネイル画像を作成してください。
+      # 仕様:
+      - 水平画像
+      - アスペクト比: 16:9
+      # 印象:
+      - ビジネスパーソンにアピールする知的でスタイリッシュなデザイン
+      - プロフェッショナルなデザイナー品質
+      - 創造的なタイポグラフィ
+      # アイキャッチ画像:
+      - { 具体的な被写体や情景描写を提案してください }
+      - 強い意図がなければ人物（20〜30代、日本人）を入れる
+      # タイポグラフィー:
+      - { 採用したサムネイルテキストを参考に7~13文字で記載 }
+      - 「タイトル」と全く同じは禁止
+      - 視認性が高いフォントを使用
+      - 文字サイズのコントラストを高く
+      - 意味を考慮した改行位置
+      - 最も目立たせたい文字は四角の帯を敷く
+      - 文字の一部だけを斜体にする
+      - 大文字・小文字は「テーマ」から変えない
+      # 背景画像:
+      - { 具体的な背景の描写を提案してください }
+      - タイポグラフィーの視認性が優先
+      - 抽象的なデザイン要素を配置し、デジタル感を演出
+      # 配色:
+      - ベースカラー70%: { 色を提案 }
+      - メインカラー25%: { 色を提案 }
+      - アクセントカラー5%: { メインカラーの補色を提案 }
+      - コントラスト: 高い、パキッとした印象
+      - 使用できる色数: 2~3色まで
+      - 彩度が高い、鮮やか
+      # レイアウト:
+      - { 以下の「レイアウトパターン参考例」から最適なものを1つ選び、その名前と英語のプロンプト要素を記載してください }
+      - 一瞬で目を引く
+      - 上下左右に80xpの余白を設ける
+      
+      # レイアウトパターン参考例:
+      1. 左右分割レイアウト (Split Layout) / split screen layout, portrait on left, text on right, clean separation, balanced composition.
+      2. 三分割構図 (Rule of Thirds) / rule of thirds, subject positioned off-center, golden ratio, dynamic balance.
+      3. サンドイッチレイアウト (Sandwich Layout) / horizontal banner layers, top and bottom text bars, central focal image, structured hierarchy.
+      4. 日の丸構図 (Central/Bullseye Composition) / centered composition, symmetrical layout, bullseye framing, focused attention.
+      5. Zの法則レイアウト (Z-Pattern Layout) / Z-pattern visual flow, headline at top-left, call-to-action at bottom-right, scannable design.
+      6. 放射線・集中線構図 (Radial/Action Lines) / radial perspective, action lines pointing to center, dynamic motion, explosive energy.
+      7. オーバーラップレイアウト (Overlap/Layered Layout) / overlapping elements, 3D depth, text behind person, layered graphic design.
+      8. 余白重視レイアウト (Minimalist/Negative Space) / minimalist design, generous negative space, clean and elegant, asymmetrical white space.
+      9. グリッドレイアウト (Grid/Modular Layout) / grid system, modular layout, multiple frames, organized information tiles.
+      10. 斜め・対角線構図 (Diagonal Composition) / diagonal alignment, slanted perspective, dynamic tension, oblique lines.
+
+      # 記事:
+      - { 記事の要約と、ターゲットが抱える本音の悩みを記載 }
 
       【作成物2：SNS投稿用テキスト】
       作成したブログ記事を宣伝するためのTwitter用投稿文（140字以内、ハッシュタグ付き）。
@@ -106,10 +161,11 @@ export async function POST(req: Request) {
       【出力形式】
       必ず以下の区切り文字「===SPLIT===」を挟んで、作成物1と作成物2のテキストのみを出力してください。（見出し等の装飾は一切不要です）
 
-      (作成物1：画像生成プロンプトの英語テキスト)
+      (作成物1：完成した画像生成プロンプトのテキスト)
       ===SPLIT===
       (作成物2：SNS投稿用のテキスト)
-      ${strictRules}`;
+      ${strictRules}
+      `;
     }
 
     const response = await ai.models.generateContent({
